@@ -91,7 +91,7 @@ int main()
     BYTE *dataBuffer = new BYTE[bytesPerCluster];
     ULONGLONG clusterToRead;
    
-    cout << "Enter cluster number you want to read (from 0 to " << clustersTotal << "): ";
+    cout << "Enter cluster number you want to write to file (from 0 to " << clustersTotal << "): ";
     cin >> clusterToRead;
 
     LARGE_INTEGER fileOffset;
@@ -133,4 +133,5 @@ int main()
     outputFile.close();
     delete[] dataBuffer;
     CloseHandle(fileHandle);
+    system("pause");
 }
