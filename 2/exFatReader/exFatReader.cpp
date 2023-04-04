@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <windows.h>
 #include <wchar.h>
 #include "reader.h"
@@ -74,36 +75,62 @@ int main()
     ExFAT_BootRecord *bRecord;
     bRecord = (ExFAT_BootRecord*)(bootSectorBuffer);
     
-    BYTE exFatName[8] = {69, 88, 70, 65, 84, 32, 32, 32};
-
-    for (int i = 0; i < 8; i++)
+    if (*(bRecord->FileSystemName) != 2314885754712905797)
     {
-        if (*(bRecord->FileSystemName + i) != exFatName[i])
-        {
-            cout << "Error! No exFat volume found!";
-            return 0;
-        }
-    } 
-        
-    int bytesPerSector = (0x01 << *bRecord->BytesPerSectorShift);
+        cout << "Error! No exFat volume found!";
+        return 0;
+    }
+
+            
+    DWORD bytesPerSector = ((DWORD)0x01 << *bRecord->BytesPerSectorShift);
     int sectorsPerCluster = (0x01 << *bRecord->SectorsPerClusterShift);
-    int bytesPerCluster = bytesPerSector * sectorsPerCluster;
-    
+    DWORD bytesPerCluster = bytesPerSector * sectorsPerCluster;
+    DWORD clustersTotal = *bRecord->ClusterCount;
+    ULONGLONG clusterOffset = bytesPerSector * *bRecord->ClusterHeapOffset - (DWORD)2 * bytesPerCluster;
+   
+    BYTE *dataBuffer = new BYTE[bytesPerCluster];
+    ULONGLONG clusterToRead;
+   
+    cout << "Enter cluster number you want to read (from 0 to " << clustersTotal << "): ";
+    cin >> clusterToRead;
 
+    LARGE_INTEGER fileOffset;
+    fileOffset.QuadPart = clusterOffset + clusterToRead * bytesPerCluster;
 
+    unsigned long currentPosition = SetFilePointer(
+        fileHandle,
+        fileOffset.LowPart,
+        &fileOffset.HighPart,
+        FILE_BEGIN
+    );
 
+    if (currentPosition != fileOffset.LowPart)
+    {
+        cout << "Error! Win32 error code: " << GetLastError();
+    }
 
+    readResult = ReadFile(
+        fileHandle,
+        dataBuffer,
+        bytesPerCluster,
+        &bytesRead,
+        NULL
+    );
 
+    if (!readResult || bytesRead != bytesPerCluster)
+    {
+        cout << "Error! Win32 error code: " << GetLastError();
+    }
+   
+    ofstream outputFile;
+    outputFile.open("cluster");
+    for (int i = 0; i < bytesPerCluster; i++) {
+        outputFile << dataBuffer[i];
+    }
+        
+    cout << "Successfully writen cluster to file \"cluster\"! Praise the Omnissiah!" << endl;
 
-
-
-
-
-
-
-
-
-
-
+    outputFile.close();
+    delete[] dataBuffer;
     CloseHandle(fileHandle);
 }

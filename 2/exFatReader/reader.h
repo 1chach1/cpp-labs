@@ -11,18 +11,18 @@
 typedef struct
 {
 	BYTE JumpBoot[3];
-	BYTE FileSystemName[8];
+	ULONGLONG FileSystemName[1];
 	BYTE MustBeZero[53];
-	BYTE PartitionOffset[8];
-	BYTE VolumeLength[8];
-	BYTE FatOffset[4];
-	BYTE FatLength[4];
-	BYTE ClusterHeapOffset[4];
-	BYTE ClusterCount[4];
-	BYTE FirstClusterOfRootDirectory[4];
-	BYTE VolumeSerialNumber[4];
+	ULONGLONG PartitionOffset[1];
+	ULONGLONG VolumeLength[1];
+	DWORD FatOffset[1];
+	DWORD FatLength[1];
+	DWORD ClusterHeapOffset[1];
+	DWORD ClusterCount[1];
+	DWORD FirstClusterOfRootDirectory[1];
+	DWORD VolumeSerialNumber[1];
 	BYTE FileSystemRevision[2];
-	BYTE VolumeFlags[2];
+	WORD VolumeFlags[1];
 	BYTE BytesPerSectorShift[1];
 	BYTE SectorsPerClusterShift[1];
 	BYTE NumberOfFats[1];
@@ -30,7 +30,7 @@ typedef struct
 	BYTE PercentInUse[1];
 	BYTE Reserved[7];
 	BYTE BootCode[390];
-	BYTE BootSignature[2];
+	WORD BootSignature[1];
 
 } ExFAT_BootRecord;
 
