@@ -18,7 +18,6 @@ sqlite3* Database;
 char *errmsg;
 sqlite3_stmt *pStatement;
 wstring sqlSelect = L"SELECT id, url, title, last_visit_time FROM urls;";
-//wstring sqlDelete = L"DELETE FROM urls WHERE id = ";
 typedef struct
 {
 	int colId;
@@ -68,7 +67,6 @@ void __fastcall TmainForm::OpenButtonClick(TObject *Sender)
 
 	while((result = sqlite3_step(pStatement)) == SQLITE_ROW)
 	{
-
 		if(result != SQLITE_ROW)
 		{
 			throw(Exception(sqlite3_errmsg(Database)));
@@ -104,8 +102,7 @@ void __fastcall TmainForm::FormCreate(TObject *Sender)
 //---------------------------------------------------------------------------
 
 void __fastcall TmainForm::VirtualStringTree1GetText(TBaseVirtualTree *Sender, PVirtualNode Node,
-          TColumnIndex Column, TVSTTextType TextType, UnicodeString &CellText)
-          
+		  TColumnIndex Column, TVSTTextType TextType, UnicodeString &CellText)
 {
 	VSTData *dbData = (VSTData*)Sender->GetNodeData(Node);
 		switch (Column)
@@ -144,7 +141,6 @@ void __fastcall TmainForm::DeleteButtonClick(TObject *Sender)
 	VirtualStringTree1->EndUpdate();
 
 	Edit1->Text = "";
-
 }
 //---------------------------------------------------------------------------
 
