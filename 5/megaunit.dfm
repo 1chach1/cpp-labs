@@ -12,27 +12,6 @@ object Form1: TForm1
   Font.Style = []
   OnClick = FormClick
   TextHeight = 15
-  object Label1: TLabel
-    Left = 384
-    Top = 208
-    Width = 34
-    Height = 15
-    Caption = 'Label1'
-  end
-  object Label2: TLabel
-    Left = 384
-    Top = 229
-    Width = 34
-    Height = 15
-    Caption = 'Label1'
-  end
-  object Label3: TLabel
-    Left = 384
-    Top = 250
-    Width = 34
-    Height = 15
-    Caption = 'Label1'
-  end
   object VirtualStringTree1: TVirtualStringTree
     Left = 8
     Top = 8

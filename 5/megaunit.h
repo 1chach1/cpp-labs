@@ -31,9 +31,9 @@ typedef struct
 	FileSystem(BYTE bootSectorBuffer[512])
 	{
 		copy(bootSectorBuffer, bootSectorBuffer + 512, bootSector);
-	}
+	};
 	virtual void getFS() = 0;
-	virtual ~FileSystem() { }
+	virtual ~FileSystem() { };
  };
 
  class ExFAT: public FileSystem
@@ -42,7 +42,7 @@ typedef struct
 	ExFAT(BYTE bootSectorBuffer[512]) : FileSystem(bootSectorBuffer)
 	{
 		getFS();
-	}
+	};
 	void getFS()
 	{
 		#pragma pack(push, 1)
@@ -81,7 +81,7 @@ typedef struct
 		clustersTotal = *bRecord->ClusterCount;
 		ULONGLONG clusterOffset = bytesPerSector * *bRecord->ClusterHeapOffset - (DWORD)2 * bytesPerCluster;
 		fileOffset.QuadPart = clusterOffset;
-	}
+	};
  };
 
  class NTFS: public FileSystem
@@ -90,7 +90,7 @@ typedef struct
 	NTFS(BYTE bootSectorBuffer[512]) : FileSystem(bootSectorBuffer)
 	{
 		getFS();
-	}
+	};
 	void getFS()
 	{
 		#pragma pack(push, 1)
@@ -111,8 +111,8 @@ typedef struct
 		clustersTotal = *bRecord->TotalSectors / bRecord->SectorsPerCluster;
 
 		fileOffset.QuadPart = 0;
-	}
-	~NTFS() { }
+	};
+	~NTFS() { };
  };
 
 class ClientFS
@@ -148,14 +148,14 @@ public:
 			throw("Unsupported file system! NTFS and exFAT only.");
 		}
 
-	}
+	};
 
-	FileSystem *returnFS() { return FS; }
+	FileSystem *returnFS() { return FS; };
 
 	~ClientFS()
 	{
 		delete FS;
-	}
+	};
 };
 
 class ClusterIterator
@@ -173,26 +173,28 @@ public:
 		buffS = buffSize;
 		//buff = (BYTE*)(buffer);
 		//buff = new BYTE[buffS];
-        buff = &buffer;
+		buff = &buffer;
 		memcpy(buff, &buffer, buffS);
-
-
-	}
+	};
 	virtual void First()
 	{
 		index = bpc;
 		memcpy(cluster, buff, bpc);
 
-	}
+	};
 	virtual void Next()
 	{
 		index += bpc;
-		memcpy(cluster,buff + index, bpc);
-	}
+		if ((buff[0] + index) <= buff[buffS])
+		{
+			memcpy(cluster,buff + index, bpc);
+		}
+
+	};
 	virtual BYTE *Current()
 	{
 		return cluster;
-	}
+	};
 	virtual bool IsDone()
 	{
 		if (index > buffS)
@@ -203,12 +205,12 @@ public:
 		{
 			return false;
 		}
-	}
+	};
 	virtual ~ClusterIterator()
 	{
 		delete[] cluster;
 		//delete[] buff;
-	}
+	};
 
 };
 
@@ -218,7 +220,7 @@ public:
 
 		BYTE pngMagicNumber[8] = {0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a};
 		ClusterIteratorDecorator(BYTE buffer, ULONGLONG buffSize, DWORD bytesPerCluster)
-		: ClusterIterator(buffer, buffSize, bytesPerCluster) { }
+		: ClusterIterator(buffer, buffSize, bytesPerCluster) { };
 
 	virtual void First()
 	{
@@ -230,7 +232,7 @@ public:
 				break;
 			}
 		}
-	}
+	};
 	virtual void Next()
 	{
 		for (; !ClusterIterator::IsDone(); ClusterIterator::Next())
@@ -241,30 +243,21 @@ public:
 				break;
 			}
 		}
-	}
+	};
 	virtual BYTE *Current()
 	{
 		return cluster;
-	}
+	};
 	virtual bool IsDone()
 	{
 		ClusterIterator::IsDone();
-	}
+	};
 	virtual ~ClusterIteratorDecorator()
 	{
 		delete[] cluster;
-	}
+	};
 
 };
-
-
-
-
-
-
-
-
-
 
 //---------------------------------------------------------------------------
 class TForm1 : public TForm
@@ -274,9 +267,6 @@ __published:	// IDE-managed Components
 	TButton *ButtonStart;
 	TButton *ButtonStop;
 	TComboBox *ComboBoxVolume;
-	TLabel *Label1;
-	TLabel *Label2;
-	TLabel *Label3;
 	void __fastcall ComboBoxVolumeSelect(TObject *Sender);
 	void __fastcall ButtonStartClick(TObject *Sender);
 	void __fastcall VirtualStringTree1GetText(TBaseVirtualTree *Sender, PVirtualNode Node,
